@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+    {% block body %}
+
+        <h3>You are logged as {{user[0]}}</h3>
+        <h3>You are chatting with {{user_to[0]}}</h3>
+
+        <form action="/send_message" method="POST">
+            <input type="text" name="to" value="{{user_to[0]}}" readonly="True" hidden='True'>
+            <br>
+            <input type="text" name="text" placeholder="Text">
+            <br>
+            <input type="submit" value="Send message">
+        </form>
+        
+        <h2>Sent messages</h2>
+        <p>---------------</p>
+        {% for message in messages %}
+        
+        <h4>Message from {{ message[1] }}</h4>
+        <p>{{ message[3] }}</p> 
+        
+        <p>---------------</p>
+        {% endfor %}
+        
+    {% endblock %}
