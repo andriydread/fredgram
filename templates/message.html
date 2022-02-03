@@ -2,18 +2,19 @@
 
     {% block body %}
 
-        <h3>You are logged as {{user[0]}}</h3>
-        <h3>You are chatting with {{user_to[0]}}</h3>
+        <h3>You are logged as {{user[0]}} and chatting with {{user_to[0]}}</h3>
 
         <form action="/send_message" method="POST">
+
             <input type="text" name="to" value="{{user_to[0]}}" readonly="True" hidden='True'>
-            <br>
             <input type="text" name="text" placeholder="Text">
             <br>
+            <br>
             <input type="submit" value="Send message">
+
         </form>
         
-        <h2>Sent messages</h2>
+        <h3>Sent messages</h3>
         <p>---------------</p>
         {% for message in messages %}
         

@@ -147,17 +147,6 @@ def postgres_messages(method, user_id_to=None, user_id_from=None, text=None, tok
                 """INSERT INTO message(user_id_from, user_id_to, text, token) VALUES(%s, %s, %s, %s);""", (user_id_from, user_id_to, text, token)
             )
 
-        elif method == 'get_received_messages':
-            cursor.execute(
-                """SELECT * FROM message WHERE user_id_to=%s;""", (user_id_to,)
-            )
-            return cursor.fetchall()
-
-        elif method == 'get_sent_messages':
-            cursor.execute(
-                """SELECT * FROM message WHERE user_id_from=%s;""", (user_id_from,)
-            )
-            return cursor.fetchall()
 
         elif method == 'get_messages_by_token':
             cursor.execute(
@@ -248,11 +237,14 @@ def register():
 
 
 
+
 # Route to display login
 
 @app.route('/login.html')
 def login_html():
-    return render_template('login.html')
+    if validate_user() == None:
+        return render_template('login.html', current_user='')
+    return render_template('login.html', current_user='You are logged as ' + postgres_profiles('what_user', id=validate_user())[0])
 
 # Create cookie for registered user
 
@@ -295,33 +287,6 @@ def index():
 
 
 
-# # Route to send and view messages
-
-# @app.route('/text.html')
-# def view():
-#     if validate_user() != None:
-
-#         sent_messages = postgres_messages('get_sent_messages', user_id_from=validate_user())
-#         received_messages = postgres_messages('get_received_messages', user_id_to=validate_user())
-#         all_messages = sent_messages + received_messages
-#         return render_template('text.html', user=postgres_profiles('what_user', id=validate_user()), messages=do_stuff_with_messages(all_messages))
-
-#     return redirect('/login.html')
-
-
-# @app.route('/send_text', methods=['POST'])
-# def text_send():
-#     if validate_user() != None:
-
-#         to_whom_id = postgres_profiles('get_user_id', request.form['to'])
-#         postgres_messages('send_text', user_id_from=validate_user(), user_id_to=to_whom_id, text=request.form['text'])
-#         return redirect('/text.html')
-
-#     return redirect('/login.html')
-
-
-
-
 # Route to pick user to start chating
 
 @app.route('/pick_user', methods=['POST'])
@@ -340,7 +305,7 @@ def pick_user():
 
     return redirect('/login.html')
 
-
+#  Route to display chat
 
 @app.route('/send_message', methods=['POST'])
 def send_message():
